@@ -1,6 +1,6 @@
 import { WebSocketGateway, SubscribeMessage, MessageBody, ConnectedSocket, WebSocketServer } from '@nestjs/websockets';
 import {Server, Socket} from 'socket.io'
-import { MessageService } from './message.service';
+import { MessageService } from './services/message.service';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
 
@@ -24,7 +24,7 @@ export class MessageGateway {
    */
   @SubscribeMessage('createMessage')
   async createMsg(@MessageBody() createMessageDto: CreateMessageDto, @ConnectedSocket() client: Socket) {
-    return this.messageService.create(createMessageDto);
+    return this.messageService.createMsg(createMessageDto);
   }
   
   /**
@@ -36,7 +36,7 @@ export class MessageGateway {
    */
   @SubscribeMessage('confirmMsg')
   async confirmMsg(@MessageBody() createMessageDto: CreateMessageDto, @ConnectedSocket() client: Socket) {
-    return this.messageService.create(createMessageDto);
+    return this.messageService.createMsg(createMessageDto);
   }
 
   /**
@@ -48,7 +48,7 @@ export class MessageGateway {
    */
   @SubscribeMessage('findAllMessage')
   async findAllMsgs(@MessageBody() createMessageDto: CreateMessageDto, @ConnectedSocket() client: Socket) {
-    return this.messageService.findAll();
+    return this.messageService.findAllMsgs();
   }
 
   /**
