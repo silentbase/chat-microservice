@@ -1,4 +1,4 @@
-import { WebSocketGateway, SubscribeMessage, MessageBody, ConnectedSocket, WebSocketServer } from '@nestjs/websockets';
+import { WebSocketGateway, SubscribeMessage, MessageBody, ConnectedSocket, WebSocketServer, OnGatewayDisconnect } from '@nestjs/websockets';
 import {Server, Socket} from 'socket.io'
 import { MessageService } from './services/message.service';
 import { CreateMessageDto } from './dto/create-message.dto';
@@ -9,13 +9,27 @@ import { UpdateMessageDto } from './dto/update-message.dto';
  * die einzelnen Metoden hören auf spezifiche Events
  * die namen der Events, werden in den  @SubscribeMessage Annotationen gesetzt
  */
-@WebSocketGateway()
-export class MessageGateway {
+ @WebSocketGateway(4000, {
+  cors: {
+    origin:'*'
+  }
+})
+export class MessageGateway{
   @WebSocketServer()
   server: Server
   
   constructor(private readonly messageService: MessageService) {}
+   
 
+  handleConnection(@ConnectedSocket() client: Socket){
+    
+    client.broadcast.emit('status', client.handshake.headers.name)
+    console.log(this.server.fetchSockets())
+  }
+  
+  handleDisconnect(@ConnectedSocket() client: Socket){
+    console.log("disconnected")
+  }
   /**
    * private 1:1 nachrichten werden verarbeitet und gespeichert
    * @param createMessageDto 
@@ -24,7 +38,10 @@ export class MessageGateway {
    */
   @SubscribeMessage('createMessage')
   async createMsg(@MessageBody() createMessageDto: CreateMessageDto, @ConnectedSocket() client: Socket) {
-    return this.messageService.createMsg(createMessageDto);
+    
+    console.log(createMessageDto)
+    //console.log(client.handshake.headers.name)
+    return createMessageDto;
   }
   
   /**
@@ -59,6 +76,7 @@ export class MessageGateway {
    */
   @SubscribeMessage('findOnlineUsers')
   async findOnlineUsers(@MessageBody() createMessageDto: CreateMessageDto, @ConnectedSocket() client: Socket) {
+    
     return 3;
   }
 
