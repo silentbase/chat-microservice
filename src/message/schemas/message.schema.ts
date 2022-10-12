@@ -6,9 +6,6 @@ export type MessageDocument = Message & Document;
 export class Message {
 
     @Prop({required:true})
-    _Id:string;
-
-    @Prop({required:true})
     from:string;
 
     @Prop({required:true})

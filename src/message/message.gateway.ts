@@ -63,7 +63,7 @@ export class MessageGateway{
   async createMsg(@MessageBody() createMessageDto: CreateMessageDto, @ConnectedSocket() client: Socket) {
     //this.natsService.publishEvent('sendMsg', createMessageDto.from);
     this.messageService.createMsg(createMessageDto);
-    client.broadcast.emit('msg', createMessageDto)
+    client.broadcast.emit('msg', createMessageDto);
     console.log(createMessageDto)
     //console.log(client.handshake.headers.name)
     return createMessageDto;
