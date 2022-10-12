@@ -6,8 +6,13 @@ export class NatsService {
     constructor(
         private readonly publisher: Publisher){}
 
-    async publishEvent(eventName:string, event:string){
-        this.publisher.emit(eventName, event).subscribe((guid) =>
-        console.log(guid));
+    async publishEvent(eventName:string, event:string): Promise<any>{
+        var id =''
+        this.publisher.emit(eventName, event).subscribe((guid) => {
+            console.log(guid);
+            return true;
+        }
+       )
+       return false;
     }
 }

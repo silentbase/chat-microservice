@@ -1,6 +1,6 @@
 export class CreateMessageDto {
-    
-    name:string;
+    from:string;
+    to:string;
+    date:string;
     text:string;
-    room:string;
 }
