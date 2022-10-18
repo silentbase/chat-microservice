@@ -2,10 +2,10 @@ import { WebSocketGateway, SubscribeMessage, MessageBody, ConnectedSocket, WebSo
 import {Server, Socket} from 'socket.io'
 import { MessageService } from './services/message.service';
 import { CreateMessageDto } from './dto/create-message.dto';
-import { UpdateMessageDto } from './dto/update-message.dto';
+
 import { NatsService } from 'src/nats/nats.service';
 
-const clients = new Set([]);
+const clients = new Map();
 
 /**
  * websocket server
@@ -35,8 +35,8 @@ export class MessageGateway{
    * @returns 
    */
   handleConnection(@ConnectedSocket() client: Socket){
-    clients.add(client.handshake.headers.name)
-    //console.log(clients.values())
+    clients.set(client.handshake.headers.name, client.id);
+    console.log(clients.values())
     client.broadcast.emit('login', client.handshake.headers.name)
   }
   
@@ -62,11 +62,13 @@ export class MessageGateway{
   @SubscribeMessage('createMessage')
   async createMsg(@MessageBody() createMessageDto: CreateMessageDto, @ConnectedSocket() client: Socket) {
     //this.natsService.publishEvent('sendMsg', createMessageDto.from);
-    this.messageService.createMsg(createMessageDto);
-    client.broadcast.emit('msg', createMessageDto);
+   
+    client.to(clients.get(createMessageDto.to)).emit('msg', createMessageDto)
+    
+      
     console.log(createMessageDto)
     //console.log(client.handshake.headers.name)
-    return createMessageDto;
+   
   }
   
   /**
@@ -78,7 +80,10 @@ export class MessageGateway{
    */
   @SubscribeMessage('confirmMsg')
   async confirmMsg(@MessageBody() createMessageDto: CreateMessageDto, @ConnectedSocket() client: Socket) {
-    return this.messageService.createMsg(createMessageDto);
+    console.log(createMessageDto.from)
+    client.to(clients.get(createMessageDto.from)).emit('confirmMsg', createMessageDto);
+    this.messageService.createMsg(createMessageDto);
+    return "msg from "+createMessageDto.from+" to "+createMessageDto.to+" confirmed"
   }
 
   /**
@@ -88,9 +93,10 @@ export class MessageGateway{
    * @param client 
    * @returns 
    */
-  @SubscribeMessage('findAllMessage')
-  async findAllMsgs(@MessageBody() createMessageDto: CreateMessageDto, @ConnectedSocket() client: Socket) {
-    return this.messageService.findAllMsgs();
+  @SubscribeMessage('findAllMessages')
+  async findAllMsgs(@MessageBody() name: string, @ConnectedSocket() client: Socket) {
+    console.log(name+"....")
+    return this.messageService.findAllMsgs(name);
   }
 
   /**
@@ -101,13 +107,14 @@ export class MessageGateway{
    * @returns 
    */
   @SubscribeMessage('findOnlineUsers')
-  async findOnlineUsers(@MessageBody() createMessageDto: CreateMessageDto, @ConnectedSocket() client: Socket) {
+  async findOnlineUsers(@ConnectedSocket() client: Socket) {
     
-    let array = Array.from(clients)
+    let array = Array.from(clients.keys())
     let index = array.indexOf(client.handshake.headers.name)
     //let index = array.findIndex((contact) => contact == client.handshake.headers.name)
     array.splice(index,1)
-    console.log('array')
+    console.log(index)
+    console.log(array)
     return array;
   }
 }

@@ -10,8 +10,8 @@ export class MessageRepository{
     constructor(@InjectModel(Message.name) private messageModel: Model<MessageDocument>){}
 
     //messageFilterQuery: FilterQuery<Message>
-    async findAll(): Promise<Message[]>{
-        return this.messageModel.find();
+    async findAll(name:string): Promise<Message[]>{
+        return this.messageModel.find({ $or:[  {to: name}, {from: name}]});
     }
 
     async create(message:Message): Promise<Message>{

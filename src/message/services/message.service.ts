@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { CreateMessageDto } from '../dto/create-message.dto';
-import { UpdateMessageDto } from '../dto/update-message.dto';
 import { MessageRepository } from '../repositories/message.repository';
 
 @Injectable()
@@ -11,7 +10,7 @@ export class MessageService {
     return this.messageRepository.create(createMessageDto);
   }
 
-  findAllMsgs() {
-    return `This action returns all message`;
+  findAllMsgs(name:string) {
+    return this.messageRepository.findAll(name);
   }
 }
