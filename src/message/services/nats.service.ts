@@ -7,7 +7,6 @@ export class NatsService {
         private readonly publisher: Publisher){}
 
     async publishEvent(eventName:string, event:string): Promise<any>{
-        var id =''
         this.publisher.emit(eventName, event).subscribe((guid) => {
             console.log(guid);
             return true;

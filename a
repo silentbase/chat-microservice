@@ -1,0 +1,59 @@
+[33mcommit 38b35d2911cfb67cd5fcc33599332f5c70831c56[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Author: Webservices <webservices@lorop.de>
+Date:   Tue Oct 18 12:15:00 2022 +0200
+
+    findAllMsgs methode hinzugefügt, set durch map ersetzt
+
+[33mcommit 6374717d10765d68da643e61627e3645a7f0e181[m
+Author: Webservices <webservices@lorop.de>
+Date:   Wed Oct 12 16:06:35 2022 +0200
+
+    updated message repo und service
+
+[33mcommit 820edbbc463aad9e8523417bd64fd9298da29549[m
+Author: Webservices <webservices@lorop.de>
+Date:   Wed Oct 12 15:03:08 2022 +0200
+
+    updated create-message.dto, getOnlineUsers method & message module
+
+[33mcommit 6b7cdf971ddbaa7f5bf10a50312d14a122d00273[m
+Author: Webservices <webservices@lorop.de>
+Date:   Tue Sep 27 12:05:30 2022 +0200
+
+    handle - connection & disconnect methoden ersetzen login & logout methoden
+
+[33mcommit f91fbdfd730a6b21314b622ce8bb8c76dcf0457e[m
+Author: Webservices <webservices@lorop.de>
+Date:   Tue Sep 27 12:03:00 2022 +0200
+
+    create-message.dto hinzugefügt
+
+[33mcommit b36fe72c611de8c715c66288c989724bcd4fe299[m
+Author: Webservices <webservices@lorop.de>
+Date:   Wed Sep 21 09:14:59 2022 +0200
+
+    nats zu app.module imports hinzugefügt
+
+[33mcommit eb333bea75c0319d6eebf05fac3bde283b2a083e[m
+Author: Webservices <webservices@lorop.de>
+Date:   Mon Sep 19 11:44:50 2022 +0200
+
+    Nats service erstellt
+
+[33mcommit 5df25ad9004c187cea369d72c5c4638ffc20c84f[m
+Author: Webservices <webservices@lorop.de>
+Date:   Fri Sep 16 15:10:00 2022 +0200
+
+    Message service, schema  - sowie repository erstellt
+
+[33mcommit d37fd10fbbb733703c2acb0606bab99be77d86c8[m
+Author: Webservices <webservices@lorop.de>
+Date:   Fri Sep 16 09:31:51 2022 +0200
+
+    websocket server und benötigte methoden erstellt
+
+[33mcommit 69871a0817be3a62b309453fe0a69b074dabbf6b[m
+Author: Webservices <webservices@lorop.de>
+Date:   Thu Sep 15 09:11:22 2022 +0200
+
+    first commit

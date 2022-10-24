@@ -3,9 +3,10 @@ import {Server, Socket} from 'socket.io'
 import { MessageService } from './services/message.service';
 import { CreateMessageDto } from './dto/create-message.dto';
 
-import { NatsService } from 'src/nats/nats.service';
+import { NatsService } from 'src/message/services/nats.service';
+import { UserService} from './services/user.service';
+import { Patterns } from './nats.patterns';
 
-const clients = new Map();
 
 /**
  * websocket server
@@ -24,7 +25,8 @@ export class MessageGateway{
 
   
   constructor(private readonly messageService: MessageService,
-    private readonly natsService: NatsService) {}
+    private readonly natsService: NatsService,
+    private userService: UserService) {}
    
 
   /**
@@ -35,8 +37,9 @@ export class MessageGateway{
    * @returns 
    */
   handleConnection(@ConnectedSocket() client: Socket){
-    clients.set(client.handshake.headers.name, client.id);
-    console.log(clients.values())
+    this.userService.getMap().set(client.handshake.headers.name, client.id);
+    console.log(this.userService.getMap().values())
+    this.natsService.publishEvent(Patterns.Login, client.handshake.headers.name.toString());
     client.broadcast.emit('login', client.handshake.headers.name)
   }
   
@@ -48,9 +51,9 @@ export class MessageGateway{
    * @returns 
    */
   handleDisconnect(@ConnectedSocket() client: Socket){
-    clients.delete(client.handshake.headers.name)
-    //console.log(clients.values())
+    this.userService.getMap().delete(client.handshake.headers.name)
     console.log("disconnected")
+    this.natsService.publishEvent(Patterns.Logout, client.handshake.headers.name.toString());
     client.broadcast.emit('logout', client.handshake.headers.name)
   }
   /**
@@ -61,13 +64,9 @@ export class MessageGateway{
    */
   @SubscribeMessage('createMessage')
   async createMsg(@MessageBody() createMessageDto: CreateMessageDto, @ConnectedSocket() client: Socket) {
-    //this.natsService.publishEvent('sendMsg', createMessageDto.from);
-   
-    client.to(clients.get(createMessageDto.to)).emit('msg', createMessageDto)
-    
-      
+    this.natsService.publishEvent(Patterns.SendMsg, createMessageDto.text);
+    client.to(this.userService.getMap().get(createMessageDto.to)).emit('msg', createMessageDto) 
     console.log(createMessageDto)
-    //console.log(client.handshake.headers.name)
    
   }
   
@@ -80,8 +79,8 @@ export class MessageGateway{
    */
   @SubscribeMessage('confirmMsg')
   async confirmMsg(@MessageBody() createMessageDto: CreateMessageDto, @ConnectedSocket() client: Socket) {
-    console.log(createMessageDto.from)
-    client.to(clients.get(createMessageDto.from)).emit('confirmMsg', createMessageDto);
+    client.to(this.userService.getMap().get(createMessageDto.from)).emit('confirmMsg', createMessageDto);
+    this.natsService.publishEvent(Patterns.RecievedMsg, createMessageDto.text);
     this.messageService.createMsg(createMessageDto);
     return "msg from "+createMessageDto.from+" to "+createMessageDto.to+" confirmed"
   }
@@ -95,7 +94,6 @@ export class MessageGateway{
    */
   @SubscribeMessage('findAllMessages')
   async findAllMsgs(@MessageBody() name: string, @ConnectedSocket() client: Socket) {
-    console.log(name+"....")
     return this.messageService.findAllMsgs(name);
   }
 
@@ -109,12 +107,9 @@ export class MessageGateway{
   @SubscribeMessage('findOnlineUsers')
   async findOnlineUsers(@ConnectedSocket() client: Socket) {
     
-    let array = Array.from(clients.keys())
+    let array = Array.from(this.userService.getMap().keys())
     let index = array.indexOf(client.handshake.headers.name)
-    //let index = array.findIndex((contact) => contact == client.handshake.headers.name)
     array.splice(index,1)
-    console.log(index)
-    console.log(array)
     return array;
   }
 }
