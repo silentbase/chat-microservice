@@ -23,6 +23,7 @@
   "dependencies": {
     "@nestjs-plugins/nestjs-nats-streaming-transport": "^1.1.1",
     "@nestjs/common": "^8.0.0",
+    "@nestjs/config": "^2.2.0",
     "@nestjs/core": "^8.0.0",
     "@nestjs/mapped-types": "*",
     "@nestjs/microservices": "^9.0.11",

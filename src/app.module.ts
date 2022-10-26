@@ -1,5 +1,5 @@
-import { NatsStreamingTransport } from '@nestjs-plugins/nestjs-nats-streaming-transport';
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -9,8 +9,8 @@ import { UserService } from './message/services/user.service';
 
 @Module({
   imports: [
-    
-    MongooseModule.forRoot('mongodb://suheib:lorop@ac-ltdv3ai-shard-00-00.5z6mksz.mongodb.net:27017,ac-ltdv3ai-shard-00-01.5z6mksz.mongodb.net:27017,ac-ltdv3ai-shard-00-02.5z6mksz.mongodb.net:27017/?ssl=true&replicaSet=atlas-428fuz-shard-0&authSource=admin&retryWrites=true&w=majority'),
+    ConfigModule.forRoot({isGlobal:true}),
+    MongooseModule.forRoot(process.env.MONGO_URI),
     MessagesModule],
   controllers: [AppController],
   providers: [AppService, UserService],
